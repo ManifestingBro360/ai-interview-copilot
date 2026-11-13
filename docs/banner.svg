@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 420" role="img" aria-label="AI Interview Copilot: free open-source AI interview assistant for macOS">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1020"/><stop offset="1" stop-color="#151b3a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="420" rx="24" fill="url(#bg)"/>
+  <text x="64" y="120" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="64" font-weight="800" fill="#ffffff">AI Interview Copilot</text>
+  <text x="64" y="170" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="26" fill="#9fb0ff">Free, open-source AI interview assistant for macOS</text>
+  <g font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="20" fill="#d7dcf5">
+    <text x="64" y="232">• Hears the interviewer and you, separately</text>
+    <text x="64" y="266">• Answers from your own stories in about 2 seconds</text>
+    <text x="64" y="300">• Overlay hidden from screen sharing</text>
+    <text x="64" y="334">• Bring your own Deepgram and Claude keys: about $1 an hour</text>
+  </g>
+  <g transform="translate(760,70)">
+    <rect width="456" height="280" rx="16" fill="#000000" fill-opacity="0.78" stroke="#3b4a8f"/>
+    <text x="20" y="34" font-family="-apple-system,Helvetica,Arial,sans-serif" font-size="13" fill="#8a93b8">Listening · 34k chars of context</text>
+    <text x="20" y="66" font-family="-apple-system,Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#5fd4e6">Tell me about a project you're proud of.</text>
+    <g font-family="-apple-system,Helvetica,Arial,sans-serif" font-size="16" fill="#ffffff">
+      <text x="20" y="104">The one I'd pick is the checkout rebuild.</text>
+      <text x="20" y="128">Pages were slow, and we were losing orders.</text>
+      <text x="20" y="164">I led a team of five. We measured first,</text>
+      <text x="20" y="188">fixed the three slowest steps, and cut load</text>
+      <text x="20" y="212">time by half. Orders went up the same month.</text>
+    </g>
+  </g>
+</svg>

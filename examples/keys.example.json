@@ -1,0 +1,5 @@
+{
+  "deepgram": "YOUR_DEEPGRAM_API_KEY",
+  "anthropic": "YOUR_ANTHROPIC_API_KEY",
+  "model": "claude-haiku-5-5"
+}
