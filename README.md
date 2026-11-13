@@ -36,6 +36,7 @@ your microphone (you) ────────┘
 
 - **Two separate audio streams.** System audio is the interviewer; the microphone is you. No voice guessing is needed to tell who said what.
 - **Only the interviewer triggers an answer.** What you say is kept as conversation history, so follow-up questions make sense.
+- **Background noise is ignored.** Microphone speech that is not English or Japanese is discarded.
 - **Paused questions are merged.** If the interviewer stops and carries on within 8 seconds, both parts are answered as one question.
 - **Your context is sent whole and cached**, so each question only waits on a few new tokens. Thinking is turned off for speed.
 - **It stays quiet** on small talk, filler and half-finished questions.
@@ -77,6 +78,24 @@ Then:
 5. Allow **Screen & System Audio Recording** and **Microphone** when macOS asks, then relaunch.
 
 `build.sh` signs the app with an Apple Development certificate if you have one, so macOS remembers the permissions across rebuilds. Without one it falls back to ad-hoc signing and you may need to grant the permissions again after each rebuild.
+
+## Interviews in a second language (Japanese)
+
+If part of your interview is in Japanese and you are not fluent, the app can keep you to answers you have rehearsed.
+
+- Put your approved answers, in romaji, in a context file with `japanese` in its name (see `examples/context/08-japanese-romaji.md`). Follow each sentence with an `(EN: ...)` line giving its meaning.
+- For a Japanese question the overlay shows an English translation of the question, your approved sentences, and their English meaning.
+- The app shows **only sentences from that file**. Anything the model composes or rewords is replaced by the closest approved sentence or dropped, because improvised Japanese can contain wrong words you cannot check live.
+- If nothing approved fits, it shows your "I'll answer in English" line followed by an English answer.
+- Files with `japanese` in the name are sent only for Japanese questions, so English questions stay fast.
+- Optional: `"japanese": "romaji" | "hiragana" | "both"` in `keys.json`, with a `japanese-kana.tsv` file (romaji, tab, kana) next to it, if you prefer to read kana.
+
+## How it stays fast
+
+- **Early start:** when the live transcript already looks like a finished question, answering begins before the pause that confirms it.
+- **Cached context:** your context is cached by the model provider and refreshed every 4 minutes, so no question pays a cold start.
+- **No thinking step**, and a small fast model by default.
+- First words typically appear 1.5 to 2 seconds after the interviewer stops speaking.
 
 ## Writing good context
 

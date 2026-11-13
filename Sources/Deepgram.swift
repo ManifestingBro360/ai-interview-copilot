@@ -18,7 +18,7 @@ final class Deepgram {
         comps.queryItems = [
             ("model", "nova-3"), ("language", "multi"), ("encoding", "linear16"),
             ("sample_rate", "16000"), ("channels", "1"), ("interim_results", "true"),
-            ("endpointing", "550"), ("smart_format", "true"), ("utterance_end_ms", "1000"),
+            ("endpointing", "400"), ("smart_format", "true"), ("utterance_end_ms", "1000"),
         ].map { URLQueryItem(name: $0.0, value: $0.1) }
         // Names and jargon the transcriber should recognise (one per line in keyterms.txt).
         let terms = (try? String(contentsOf: Config.dir.appendingPathComponent("keyterms.txt"), encoding: .utf8)) ?? ""

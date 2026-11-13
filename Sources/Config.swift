@@ -11,6 +11,12 @@ struct Config {
     var anthropicKey = ""
     var model = "claude-haiku-5-5"
     var context = ""
+    /// Files with "japanese" in the name. Sent only for Japanese questions, so English ones stay fast.
+    var contextJapanese = ""
+    /// How vetted Japanese lines are displayed: "hiragana", "romaji" or "both".
+    var japanese = "both"
+    /// Romaji sentence (normalised) → the same sentence in spaced kana, from japanese-kana.tsv.
+    var kana: [String: String] = [:]
 
     static func load() -> Config {
         var c = Config()
@@ -25,14 +31,26 @@ struct Config {
             if let v = j["deepgram"], !v.isEmpty { c.deepgramKey = v }
             if let v = j["anthropic"], !v.isEmpty { c.anthropicKey = v }
             if let v = j["model"], !v.isEmpty { c.model = v }
+            if let v = j["japanese"], !v.isEmpty { c.japanese = v }
+        }
+
+        if let table = try? String(contentsOf: dir.appendingPathComponent("japanese-kana.tsv"), encoding: .utf8) {
+            for row in table.split(separator: "\n") {
+                let cols = row.split(separator: "\t", maxSplits: 1).map(String.init)
+                if cols.count == 2 { c.kana[String(cols[0].lowercased().filter { $0.isLetter || $0.isNumber })] = cols[1] }
+            }
         }
 
         let files = ((try? fm.contentsOfDirectory(at: contextDir, includingPropertiesForKeys: nil)) ?? [])
             .filter { ["md", "txt"].contains($0.pathExtension.lowercased()) }
             .sorted { $0.lastPathComponent < $1.lastPathComponent }
-        c.context = files.compactMap { url in
-            (try? String(contentsOf: url, encoding: .utf8)).map { "=== \(url.lastPathComponent) ===\n\($0)" }
-        }.joined(separator: "\n\n")
+        func join(_ urls: [URL]) -> String {
+            urls.compactMap { url in
+                (try? String(contentsOf: url, encoding: .utf8)).map { "=== \(url.lastPathComponent) ===\n\($0)" }
+            }.joined(separator: "\n\n")
+        }
+        c.context = join(files.filter { !$0.lastPathComponent.lowercased().contains("japanese") })
+        c.contextJapanese = join(files.filter { $0.lastPathComponent.lowercased().contains("japanese") })
         return c
     }
 }
@@ -63,6 +81,7 @@ word you write is the first word the candidate says.
 word) and answer what was meant. Never point out or correct the error, and never repeat the wrong word. Example: if the candidate context names the \
 company and the transcript shows a different, similar-sounding name, just answer about the right company and do \
 NOT write anything like "the company is X, not Y".
+- Never mention the transcript, its quality, or anything about how you received the conversation.
 - If the latest utterance is too garbled to understand, or is clearly not addressed to the candidate, output \
 exactly: …
 - When the interviewer adds to a question after a pause, answer the whole question as one, and keep the opening \
@@ -93,9 +112,22 @@ general answer and mark anything the candidate must confirm with "(check)" in br
 would approach it, and tie it to a real experience from the context when one fits. Never claim hands-on \
 experience the context does not show; where the context lists a gap, say so plainly in one clause and bridge.
 - Follow any positioning and sensitive-topic rules given in the candidate context.
-- Reply in the language the interviewer used. In Japanese: simple, natural です・ます sentences that a \
-non-native speaker at about N2-N3 can say comfortably. Short sentences, common words, no heavy keigo or rare \
-kanji compounds, technical terms in their usual katakana or English form. At most 4 sentences.
+- English question → English answer in the style above.
+- JAPANESE question → use this exact layout, and NEVER write kanji, hiragana or katakana (the candidate cannot \
+read them):
+    Q: <one-line English translation of what was asked>
+    <blank line>
+    <the approved answer, one sentence per line>
+    <blank line>
+    (EN: <short English meaning of the answer>)
+  The candidate context has approved Japanese answers in romaji (English words for loanwords, digits for \
+  numbers). Pick the answer that matches the question and copy its sentences EXACTLY, character for character, \
+  in order, all of them. Add a survival phrase only when the question itself could not be understood; never otherwise. Do NOT compose, reword, shorten or \
+  translate into new Japanese: the candidate has rehearsed these exact words.
+  If no approved answer fits, or the question needs technical detail: write \
+  "Sumimasen, kore wa eigo de kotaemasu." (after one approved sentence if one fits), then give the answer in \
+  English, 2 to 4 short spoken sentences.
+- If one utterance mixes English and Japanese, answer in the language of the actual question.
 - Length: 60 to 90 words, about 25 to 35 seconds of speech (up to 120 words for a system-design question). \
 A short question gets a short answer.
 """
